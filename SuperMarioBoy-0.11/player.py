@@ -1,7 +1,8 @@
-from pygame import *
+import pygame
 import pyganim
 import os
 import blocks
+import time
 
 MOVE_SPEED = 7
 WIDTH = 22
@@ -28,18 +29,18 @@ ANIMATION_JUMP = [('%s/mario/j.png' % ICON_DIR, 0.1)]
 ANIMATION_STAY = [('%s/mario/0.png' % ICON_DIR, 0.1)]
 
 
-class Player(sprite.Sprite):
+class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
-        sprite.Sprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self)
         self.xvel = 0  # скорость перемещения. 0 - стоять на месте
         self.startX = x  # Начальная позиция Х, пригодится когда будем переигрывать уровень
         self.startY = y
         self.yvel = 0  # скорость вертикального перемещения
         self.onGround = False  # На земле ли я?
-        self.image = Surface((WIDTH, HEIGHT))
-        self.image.fill(Color(COLOR))
-        self.rect = Rect(x, y, WIDTH, HEIGHT)  # прямоугольный объект
-        self.image.set_colorkey(Color(COLOR))  # делаем фон прозрачным
+        self.image = pygame.Surface((WIDTH, HEIGHT))
+        self.image.fill(pygame.Color(COLOR))
+        self.rect = pygame.Rect(x, y, WIDTH, HEIGHT)  # прямоугольный объект
+        self.image.set_colorkey(pygame.Color(COLOR))  # делаем фон прозрачным
         #        Анимация движения вправо
         boltAnim = []
         for anim in ANIMATION_RIGHT:
@@ -73,12 +74,12 @@ class Player(sprite.Sprite):
         if up:
             if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли
                 self.yvel = -JUMP_POWER
-            self.image.fill(Color(COLOR))
+            self.image.fill(pygame.Color(COLOR))
             self.boltAnimJump.blit(self.image, (0, 0))
 
         if left:
             self.xvel = -MOVE_SPEED  # Лево = x- n
-            self.image.fill(Color(COLOR))
+            self.image.fill(pygame.Color(COLOR))
             if up:  # для прыжка влево есть отдельная анимация
                 self.boltAnimJumpLeft.blit(self.image, (0, 0))
             else:
@@ -86,7 +87,7 @@ class Player(sprite.Sprite):
 
         if right:
             self.xvel = MOVE_SPEED  # Право = x + n
-            self.image.fill(Color(COLOR))
+            self.image.fill(pygame.Color(COLOR))
             if up:
                 self.boltAnimJumpRight.blit(self.image, (0, 0))
             else:
@@ -95,7 +96,7 @@ class Player(sprite.Sprite):
         if not (left or right):  # стоим, когда нет указаний идти
             self.xvel = 0
             if not up:
-                self.image.fill(Color(COLOR))
+                self.image.fill(pygame.Color(COLOR))
                 self.boltAnimStay.blit(self.image, (0, 0))
 
         if not self.onGround:
@@ -110,7 +111,7 @@ class Player(sprite.Sprite):
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
-            if sprite.collide_rect(self, p):  # если есть пересечение платформы с игроком
+            if pygame.sprite.collide_rect(self, p):  # если есть пересечение платформы с игроком
 
                 if xvel > 0:  # если движется вправо
                     self.rect.right = p.rect.left  # то не движется вправо
@@ -123,14 +124,17 @@ class Player(sprite.Sprite):
                     self.onGround = True  # и становится на что-то твердое
                     self.yvel = 0  # и энергия падения пропадает
 
+
                 if yvel < 0:  # если движется вверх
                     self.rect.top = p.rect.bottom  # то не движется вверх
                     self.yvel = 0  # и энергия прыжка пропадает
                 if isinstance(p, blocks.BlockDie):  # если пересакаемый блок - blocks.BlockDie
                     self.die()  # умираем
+            if self.rect.x in range(1067, 1100) and self.rect.y in range(715, 750):
+                self.die()
 
     def die(self):
-        time.wait(500)
+        time.sleep(3)
         self.teleporting(self.startX, self.startY)  # перемещаемся в начальные координаты
 
     def teleporting(self, goX, goY):

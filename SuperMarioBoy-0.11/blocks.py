@@ -1,4 +1,4 @@
-from pygame import *
+import pygame
 import os
 import pyganim
 
@@ -12,32 +12,41 @@ ANIMATION_PRINCESS = [
     ('%s/blocks/princess_r.png' % ICON_DIR)]
 
 
-class Platform(sprite.Sprite):
+class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y):
-        sprite.Sprite.__init__(self)
-        self.image = Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))
-        self.image.fill(Color(PLATFORM_COLOR))
-        self.image = image.load("%s/blocks/platform.png" % ICON_DIR)
-        self.rect = Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))
+        self.image.fill(pygame.Color(PLATFORM_COLOR))
+        self.image = pygame.image.load("%s/blocks/platform.png" % ICON_DIR)
+        self.rect = pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT)
 
 
 class BlockDie(Platform):
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
-        self.image = image.load("%s/blocks/dieBlock.png" % ICON_DIR)
+        self.image = pygame.image.load("%s/blocks/dieBlock.png" % ICON_DIR)
 
 
 class BlockDi(Platform):
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
-        self.image = image.load("%s/blocks/fire1.png" % ICON_DIR)
+        self.image = pygame.image.load("%s/blocks/fire1.png" % ICON_DIR)
 
 
 class Princess(Platform):
+    image =  pygame.image.load("%s/blocks/princess_r.png" % ICON_DIR)
+    mask = pygame.mask.from_surface(image)
+    rect = image.get_rect()
+
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
-        self.image = image.load("%s/blocks/princess_r.png" % ICON_DIR)
+        self.image = pygame.image.load("%s/blocks/princess_r.png" % ICON_DIR)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
-        self.image.fill(Color(PLATFORM_COLOR))
+        self.image.fill(pygame.Color(PLATFORM_COLOR))
         self.boltAnim.blit(self.image, (0, 0))
+
