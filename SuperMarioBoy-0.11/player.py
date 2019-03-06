@@ -124,14 +124,13 @@ class Player(pygame.sprite.Sprite):
                     self.onGround = True  # и становится на что-то твердое
                     self.yvel = 0  # и энергия падения пропадает
 
-
                 if yvel < 0:  # если движется вверх
                     self.rect.top = p.rect.bottom  # то не движется вверх
                     self.yvel = 0  # и энергия прыжка пропадает
                 if isinstance(p, blocks.BlockDie):  # если пересакаемый блок - blocks.BlockDie
                     self.die()  # умираем
-            if self.rect.x in range(1067, 1100) and self.rect.y in range(715, 750):
-                self.die()
+                if isinstance(p, blocks.Princess):
+                    self.die()  # умираем
 
     def die(self):
         time.sleep(3)
